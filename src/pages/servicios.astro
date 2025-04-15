@@ -1,0 +1,17 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FadeIn from '../components/FadeIn.jsx';
+import ServiciosHero from '../components/ServiciosHero.jsx';
+import ServiciosLista from '../components/ServiciosLista.jsx';
+import ServiciosDestacado from '../components/ServiciosDestacado.jsx';
+import ServiciosCTA from '../components/ServiciosCTA.jsx';
+---
+<meta charset="UTF-8" />
+<FadeIn client:load>
+  <Layout>
+    <ServiciosHero />
+    <ServiciosLista />
+    <ServiciosDestacado />
+    <ServiciosCTA />
+  </Layout>
+</FadeIn>
