@@ -1,0 +1,14 @@
+---
+ import FadeIn from "../components/FadeIn";
+ import Layout from "../layouts/Layout.astro";
+ import ContactoHero from "../components/ContactoHero";
+ import ContactoFormulario from "../components/ContactoFormulario";
+---
+
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<FadeIn client:load>
+    <Layout>
+        <ContactoHero />
+        <ContactoFormulario />
+    </Layout>
+</FadeIn>

@@ -1,6 +1,6 @@
 export default function ProductosCTA() {
     return (
-      <section className="bg-white min-h-[60vh] py-24 px-6 flex items-center">
+      <section className="bg-mydilsa-light min-h-[60vh] py-24 px-6 flex items-center">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-mydilsa-dark mb-6">
             ¿Necesitas cotizar una pieza o lote de producción?
