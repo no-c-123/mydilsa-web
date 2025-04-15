@@ -1,7 +1,9 @@
 ---
 import '../styles/global.css';
-import Header from '../components/Header.astro';
+import Header from '../components/Header';
 import Footer from '../components/Footer.astro';
+
+const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -16,7 +18,7 @@ import Footer from '../components/Footer.astro';
   </head>
 
   <body class="font-sans bg-mydilsa-light text-mydilsa-dark flex flex-col min-h-screen">
-    <Header />
+    <Header currentPath={Astro.url.pathname} client:load />
     <main class="flex-1">
       <slot />
     </main>
