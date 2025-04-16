@@ -1,0 +1,12 @@
+---
+import Layout from "../layouts/Layout.astro";
+import FadeIn from "../components/FadeIn";
+import QuoteForm from "../components/QuoteForm";
+---
+
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<FadeIn client:load>
+    <Layout>
+        <QuoteForm client:load />
+    </Layout>
+</FadeIn>
