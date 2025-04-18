@@ -83,7 +83,7 @@ export default function QuoteForm() {
                       setMaterial(m);
                       next();
                     }}
-                    className="bg-black text-white px-6 py-2 rounded-lg hover:text-green-400 transition"
+                    className="bg-gray-800/20 text-black px-6 py-2 rounded-lg hover:text-green-400 transition"
                   >
                     {m}
                   </button>

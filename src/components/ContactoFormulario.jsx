@@ -2,8 +2,9 @@ import '../styles/ContactoFormulario.css'; // ← you'll need to create this CSS
 
 export default function ContactoFormulario() {
     return (
-      <section className="bg-white py-24 px-6 flex items-center justify-center">
-        <form className="w-full max-w-2xl space-y-12">
+      <section className="bg-white py-24 px-6 mx-auto grid grid-cols-2">
+        <section className="ml-40 w-full max-w-2xl space-y-12">
+        <h1 className='text-3xl'>Si tienes dudas, envia un correo.</h1>
           {/* Nombre */}
           <div className="wave-group w-full">
             <input required type="text" className="input w-full" />
@@ -51,7 +52,21 @@ export default function ContactoFormulario() {
               Enviar mensaje
             </button>
           </div>
-        </form>
+        </section>
+
+        <section className='w-full'>
+          <h1 className='text-3xl flex justify-center'>O contacta a la oficina directamente.</h1>
+          <div className='flex justify-center'>
+            <p>
+                Correo:<a href="mailto:ventas1@mydilsa.com"> ventas1@mydilsa.com</a>
+            </p>
+          </div>
+          <div className='flex justify-center'>
+            <p>
+                Teléfono: <a href="tel:+528183868291"> (81) 8386-8291 </a>
+            </p>
+          </div>
+        </section>
       </section>
     );
 }
