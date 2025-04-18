@@ -5,4 +5,12 @@
 body {
     @apply font-sans bg-mydilsa-light text-mydilsa-dark;
 }
-  
+
+@keyframes expandCard {
+    100% {
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+}
