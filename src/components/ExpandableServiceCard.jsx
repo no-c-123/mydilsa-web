@@ -101,6 +101,102 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
               Cerrar
             </button>
           )}
+
+          {title === "Diseño CAD" && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center justify-center">
+                <img
+                  src="/servicios/cad1.jpg"
+                  alt="Diseño CAD"
+                  className="w-auto h-36 rounded-lg object-cover"
+                />
+              </div>
+              <div className="flex items-center justify-center">
+                <img
+                  src="/servicios/CATIA-LOGO.webp"
+                  alt="Diseño CAD"
+                  className="w-auto h-36 rounded-lg object-cover"
+                />
+              </div>
+              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-lg w-max mt-5">
+                <li>Planos Listos para manufactura</li>
+                <li>Modelado 3D paramétrico</li>
+                <li>Archivos compatibles con CATIA</li>
+              </ul>
+            </div>
+          )}
+
+          {title === "Maquinado CNC" && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center justify-center">
+                <img
+                  src="/servicios/cnc1.png"
+                  alt="Maquinado CNC"
+                  className="w-auto h-36 rounded-lg"
+                />
+              </div>
+              <div className="flex items-center justify-center">
+                <img
+                  src="/servicios/cnc2.webp"
+                  alt="Maquinado CNC"
+                  className="w-auto h-56 rounded-lg"
+                />
+              </div>
+              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-lg w-max mt-5">
+                <li>Tornos CNC de precisión ideal</li>
+                <li>Centros de Maquinado Multieje</li>
+                <li>Control de Calidad Dimensional</li>
+              </ul>
+            </div>
+          )}
+
+          {title === "Soldadura y Ensamble" && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center justify-center">
+                <img
+                  src="/servicios/soldadura1.png"
+                  alt="Soldadura y Ensamble"
+                  className="w-full h-auto rounded-lg shadow-lg"
+                />
+              </div>
+              <div className="flex items-center justify-center">
+                <img
+                  src="/servicios/soldadura2.png"
+                  alt="Soldadura y Ensamble"
+                  className="w-full h-auto rounded-lg shadow-lg"
+                />
+              </div>
+              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-lg w-max mt-5">
+                <li>Soldadura MIG/TIG Especializada</li>
+                <li>Ensambles Mecánicos de Alta Precisión</li>
+                <li>Montajes Llave en Mano</li>
+              </ul>
+            </div>
+          )}
+
+          {title === "Prototipado Rápido" && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex items-center justify-center">
+                <img
+                  src="/servicios/impresion1.png"
+                  alt="Impresión 3D"
+                  className="w-full h-auto rounded-lg "
+                />
+              </div>
+              <div className="flex items-center justify-center">
+                <img
+                  src="/servicios/impresion2.png"
+                  alt="Impresión 3D"
+                  className="w-full h-auto rounded-lg "
+                />
+              </div>
+              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-lg w-max mt-5">
+                <li>Impresión 3D Funcional</li>
+                <li>Maquinado Provisional en Plásticos</li>
+                <li>Evaluación y Corrección de Diseño</li>
+              </ul>
+            </div>
+          )}
         </div>
       )}
     </>

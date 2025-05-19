@@ -135,16 +135,20 @@ export default function QuoteForm() {
                       return;
                     }
 
+                    const volumen = getVolumen(tipo, e, a, l);
+                    if (volumen === null) {
+                      alert("Tipo no reconocido.");
+                      return;
+                    }
+
                     const mat = materialData[material];
                     if (!mat) {
                       alert("Datos de material no encontrados.");
                       return;
                     }
 
-                    const volumen = e * a * l;
                     const pesoKg = (volumen * mat.densidad) / 1000;
                     const precioEstimado = (pesoKg * mat.precioKilo).toFixed(2);
-
                     setPrecio(precioEstimado);
                     next();
                   }}
