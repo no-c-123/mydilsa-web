@@ -9,7 +9,6 @@ export default function ContactoFormulario() {
   const sendEmail = (e) => {
     e.preventDefault();
 
-
     emailjs.sendForm(
       'service_m804eco',
       'template_3eftr76',
@@ -27,9 +26,10 @@ export default function ContactoFormulario() {
   };
 
   return (
-    <section className="bg-white py-24 px-6 mx-auto grid grid-cols-2 gap-10">
-      <section className="ml-10 max-w-[100%] space-y-12 border rounded-lg shadow-md p-6 bg-gray-50">
-        <h1 className='text-3xl'>Si tienes dudas, envía un correo.</h1>
+    <section className="bg-white py-24 px-4 sm:px-6 mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
+      {/* Formulario */}
+      <section className="space-y-12 border rounded-lg shadow-md p-6 bg-gray-50 w-full">
+        <h1 className='text-2xl sm:text-3xl'>Si tienes dudas, envía un correo.</h1>
 
         <form ref={form} onSubmit={sendEmail} className="space-y-10">
           {/* Nombre */}
@@ -77,8 +77,6 @@ export default function ContactoFormulario() {
             </div>
           </div>
 
-       
-
           {/* Botón */}
           <div className="text-center">
             <button type="submit" className="bg-mydilsa-accent text-white px-8 py-3 rounded-md font-semibold shadow hover:bg-mydilsa-dark transition">
@@ -89,8 +87,8 @@ export default function ContactoFormulario() {
       </section>
 
       {/* Información de contacto */}
-      <section className="w-full border rounded-lg shadow-md p-6 bg-gray-50 mr-10 flex flex-col items-center text-center space-y-4">
-        <h1 className="text-3xl font-semibold">O contacta a la oficina directamente.</h1>
+      <section className="border rounded-lg shadow-md p-6 bg-gray-50 w-full flex flex-col items-center text-center space-y-4">
+        <h1 className="text-2xl sm:text-3xl font-semibold">O contacta a la oficina directamente.</h1>
         <div>
           <p className="text-lg">📧 <a href="mailto:ventas1@mydilsa.com" className="text-blue-600 hover:underline">ventas1@mydilsa.com</a></p>
           <p className="text-lg">📞 <a href="tel:+528111253156" className="text-blue-600 hover:underline">(81) 1125-3156</a></p>

@@ -48,13 +48,21 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
     position: "fixed",
     top: isOpen ? "50%" : `${initialPosition?.top}px`,
     left: isOpen ? "50%" : `${initialPosition?.left}px`,
-    width: isOpen ? "40rem" : `${initialPosition?.width}px`,
-    height: isOpen ? "80vh" : `${initialPosition?.height}px`,
+    width: isOpen
+      ? window.innerWidth < 640
+        ? "90vw"
+        : "40rem"
+      : `${initialPosition?.width}px`,
+    height: isOpen
+      ? window.innerWidth < 640
+        ? "90vh"
+        : "80vh"
+      : `${initialPosition?.height}px`,
     transform: isOpen ? "translate(-50%, -50%)" : "none",
     zIndex: 50,
     backgroundColor: "white",
-    padding: "2rem",
-    overflowY: "hidden",
+    padding: "1.5rem",
+    overflowY: "auto",
     borderRadius: "1rem",
     transition: "all 0.7s ease-in-out",
     border: "1px solid #e5e7eb",
@@ -62,7 +70,6 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
 
   return (
     <>
-      {/* Backdrop */}
       {animating && (
         <div
           onClick={handleClose}
@@ -74,11 +81,10 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
         />
       )}
 
-      {/* Static Card */}
       <div
         ref={cardRef}
         onClick={handleOpen}
-        className="p-6 border w-[40rem] h-[20vh] rounded-xl hover:shadow-lg cursor-pointer bg-white transition-all duration-300"
+        className="p-6 border w-full max-w-[40rem] h-40 sm:h-[20vh] rounded-xl hover:shadow-lg cursor-pointer bg-white transition-all duration-300"
         style={{ visibility: animating ? "hidden" : "visible" }}
       >
         <div className="text-4xl mb-4">{icon}</div>
@@ -86,7 +92,6 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
         <p className="text-gray-700 leading-relaxed">{desc}</p>
       </div>
 
-      {/* Floating Animated Card */}
       {animating && initialPosition && (
         <div style={floatingStyle} className="shadow-xl">
           <div className="text-4xl mb-4">{icon}</div>
@@ -103,22 +108,22 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
           )}
 
           {title === "Diseño CAD" && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
               <div className="flex items-center justify-center">
                 <img
                   src="/servicios/cad1.jpg"
                   alt="Diseño CAD"
-                  className="w-auto h-36 rounded-lg object-cover"
+                  className="w-full h-auto max-h-40 object-contain rounded-lg"
                 />
               </div>
               <div className="flex items-center justify-center">
                 <img
                   src="/servicios/CATIA-LOGO.webp"
                   alt="Diseño CAD"
-                  className="w-auto h-36 rounded-lg object-cover"
+                  className="w-full h-auto max-h-40 object-contain rounded-lg"
                 />
               </div>
-              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-lg w-max mt-5">
+              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-base w-max mt-5">
                 <li>Planos Listos para manufactura</li>
                 <li>Modelado 3D paramétrico</li>
                 <li>Archivos compatibles con CATIA</li>
@@ -127,22 +132,22 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
           )}
 
           {title === "Maquinado CNC" && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
               <div className="flex items-center justify-center">
                 <img
                   src="/servicios/cnc1.png"
                   alt="Maquinado CNC"
-                  className="w-auto h-36 rounded-lg"
+                  className="w-full h-auto max-h-40 object-contain rounded-lg"
                 />
               </div>
               <div className="flex items-center justify-center">
                 <img
                   src="/servicios/cnc2.webp"
                   alt="Maquinado CNC"
-                  className="w-auto h-56 rounded-lg"
+                  className="w-full h-auto max-h-56 object-contain rounded-lg"
                 />
               </div>
-              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-lg w-max mt-5">
+              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-base w-max mt-5">
                 <li>Tornos CNC de precisión ideal</li>
                 <li>Centros de Maquinado Multieje</li>
                 <li>Control de Calidad Dimensional</li>
@@ -151,7 +156,7 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
           )}
 
           {title === "Soldadura y Ensamble" && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
               <div className="flex items-center justify-center">
                 <img
                   src="/servicios/soldadura1.png"
@@ -166,7 +171,7 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
                   className="w-full h-auto rounded-lg shadow-lg"
                 />
               </div>
-              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-lg w-max mt-5">
+              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-base w-max mt-5">
                 <li>Soldadura MIG/TIG Especializada</li>
                 <li>Ensambles Mecánicos de Alta Precisión</li>
                 <li>Montajes Llave en Mano</li>
@@ -175,22 +180,22 @@ export default function ExpandableServiceCard({ title, desc, icon, fullContent }
           )}
 
           {title === "Prototipado Rápido" && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
               <div className="flex items-center justify-center">
                 <img
                   src="/servicios/impresion1.png"
                   alt="Impresión 3D"
-                  className="w-full h-auto rounded-lg "
+                  className="w-full h-auto rounded-lg"
                 />
               </div>
               <div className="flex items-center justify-center">
                 <img
                   src="/servicios/impresion2.png"
                   alt="Impresión 3D"
-                  className="w-full h-auto rounded-lg "
+                  className="w-full h-auto rounded-lg"
                 />
               </div>
-              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-lg w-max mt-5">
+              <ul className="list-disc pl-5 space-y-1 text-gray-700 text-base w-max mt-5">
                 <li>Impresión 3D Funcional</li>
                 <li>Maquinado Provisional en Plásticos</li>
                 <li>Evaluación y Corrección de Diseño</li>
