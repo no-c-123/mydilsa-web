@@ -12,17 +12,11 @@ export default function ContactoFormulario() {
     import('../components/HcaptchaClient.jsx?client=only').then(mod => setCaptchaComponent(() => mod.default));
   }, []);
 
-  const handleVerify = (token) => {
-    setCaptchaToken(token);
-  };
+
 
   const sendEmail = (e) => {
     e.preventDefault();
 
-    if (!captchaToken) {
-      alert("Por favor, confirma que no eres un robot.");
-      return;
-    }
 
     emailjs.sendForm(
       'service_m804eco',
@@ -91,12 +85,7 @@ export default function ContactoFormulario() {
             </div>
           </div>
 
-          {/* CAPTCHA */}
-          <div className="flex justify-center">
-            {CaptchaComponent && (
-              <CaptchaComponent onVerify={handleVerify} ref={captchaRef} />
-            )}
-          </div>
+       
 
           {/* Botón */}
           <div className="text-center">
