@@ -33,11 +33,17 @@ export default function Header({ currentPath }) {
         </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex gap-8 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
           <a href="/" className={linkClass('/')}>Inicio</a>
           <a href="/servicios" className={linkClass('/servicios')}>Servicios</a>
           <a href="/productos" className={linkClass('/productos')}>Productos</a>
           <a href="/contacto" className={linkClass('/contacto')}>Contacto</a>
+          <a
+            href="/signin"
+            className="ml-6 px-4 py-1.5 bg-mydilsa-accent text-white rounded-md hover:bg-mydilsa-steel transition text-sm"
+          >
+            Iniciar sesión
+          </a>
         </nav>
 
         {/* Mobile Toggle */}
