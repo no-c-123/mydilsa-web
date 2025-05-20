@@ -15,7 +15,7 @@ export default function ServiciosCTA() {
           Solicitar cotización
         </a>
         <p className="mt-6 text-sm text-gray-600">
-          Tiempo promedio de respuesta: <span className="font-medium text-mydilsa-dark">menos de 24 horas</span>
+          Tiempo promedio de respuesta: <span className="font-bold text-mydilsa-dark">menos de 24 horas</span>
         </p>
       </div>
     </section>
