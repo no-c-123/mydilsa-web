@@ -1,12 +1,10 @@
 import '../styles/ContactoFormulario.css';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import emailjs from '@emailjs/browser';
 
 export default function ContactoFormulario() {
   const form = useRef();
   const captchaRef = useRef();
-  const [captchaToken, setCaptchaToken] = useState(null);
-  const [CaptchaComponent, setCaptchaComponent] = useState(null);
 
   useEffect(() => {
     import('../components/HcaptchaClient.jsx?client=only').then(mod => setCaptchaComponent(() => mod.default));
