@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import AuthButton from './AuthButton';
 
 export default function Header({ currentPath }) {
   const [open, setOpen] = useState(false);
@@ -38,12 +39,8 @@ export default function Header({ currentPath }) {
           <a href="/servicios" className={linkClass('/servicios')}>Servicios</a>
           <a href="/productos" className={linkClass('/productos')}>Productos</a>
           <a href="/contacto" className={linkClass('/contacto')}>Contacto</a>
-          <a
-            href="/signin"
-            className="ml-6 px-4 py-1.5 bg-mydilsa-accent text-white rounded-md hover:bg-mydilsa-steel transition text-sm"
-          >
-            Iniciar sesión
-          </a>
+          <AuthButton onClick={() => setOpen(false)}/>
+          
         </nav>
 
         {/* Mobile Toggle */}
@@ -61,6 +58,7 @@ export default function Header({ currentPath }) {
           <a href="/servicios" onClick={() => setOpen(false)} className={linkClass('/servicios')}>Servicios</a>
           <a href="/productos" onClick={() => setOpen(false)} className={linkClass('/productos')}>Productos</a>
           <a href="/contacto" onClick={() => setOpen(false)} className={linkClass('/contacto')}>Contacto</a>
+          <AuthButton onClick={() => setOpen(false)}/>
         </div>
       )}
     </header>
