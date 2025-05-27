@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function CallToAction() {
     return (
       <section className="bg-white min-h-[70vh] py-16 px-6">

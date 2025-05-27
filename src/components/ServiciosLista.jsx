@@ -1,5 +1,5 @@
 import ExpandableServiceCard from "./ExpandableServiceCard";
-import { services } from "@/data/servicios";
+import { services } from "../data/servicios";
 
 export default function ServiciosLista() {
   return (
