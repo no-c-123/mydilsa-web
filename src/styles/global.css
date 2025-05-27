@@ -61,3 +61,9 @@ body {
 .inputbox input:focus ~ i {
   height: 44px;
 }
+
+video {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+

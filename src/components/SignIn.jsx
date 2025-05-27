@@ -1,7 +1,7 @@
 // src/pages/signin.jsx
 import { supabase } from "../lib/supabaseClient";
 import { useState, useEffect } from "react";
-
+import '../styles/global.css'
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
