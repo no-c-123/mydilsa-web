@@ -1,12 +1,37 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout2 from "../layouts/Layout2.astro";
 import FadeIn from "../components/FadeIn";
-import QuoteForm from "../components/QuoteForm";
+import BackgroundVideoScroll1 from "../components/backgroundVideos/BackgroundVideoScroll1";
+import BackgroundVideoScroll2 from "../components/backgroundVideos/BackgroundVideoScroll2";
+import BackgroundVideoScroll3 from "../components/backgroundVideos/BackgroundVideoScroll3";
+import BackgroundVideoScroll4 from "../components/backgroundVideos/BackgroundVideoScroll4";
+import BackgroundVideoScroll5 from "../components/backgroundVideos/BackgroundVideoScroll5";
+import CotizarCTA from "../components/CotizarCTA";
+import Materiales from "../components/Materiales";
+
 ---
 
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <FadeIn client:load>
-    <Layout>
-        <QuoteForm client:load />
-    </Layout>
+    <Layout2>
+        <div id="scroll-container-1" class="relative h-[250vh]">
+            <BackgroundVideoScroll1 client:only="react" />
+        </div>
+        <div id="scroll-container-2" class="relative h-[300vh]">
+            <BackgroundVideoScroll2 client:only="react" />
+        </div>
+        <div id="scroll-container-3">
+            <BackgroundVideoScroll3 client:only="react" />
+        </div>
+        <div id="scroll-container-4">
+            <BackgroundVideoScroll4 client:only="react" />
+        </div>
+        <div id="scroll-container-5">
+            <BackgroundVideoScroll5 client:only="react" />
+        </div>
+        <div id="scroll-container-6">
+            <Materiales client:only="react" />
+            <CotizarCTA client:only="react" />
+        </div>
+    </Layout2>
 </FadeIn>

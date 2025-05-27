@@ -11,6 +11,7 @@ import path from 'path';
 export default defineConfig({
 
   integrations: [react(), tailwind()],
+  output : 'server',
   vite :{
     resolve: {
       alias: {
