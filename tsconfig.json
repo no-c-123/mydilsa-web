@@ -13,8 +13,9 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
-    "paths" : {
-      "@/*" : ["src/*"]
-    }
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": []  // ⬅️ Explicitly prevent loading global types like 'debug'
   }
 }
