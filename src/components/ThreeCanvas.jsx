@@ -1,4 +1,4 @@
-import { use, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TransformControls } from 'three-stdlib';
@@ -21,7 +21,6 @@ export default function ThreeCanvas() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [transformMode, setTransformMode] = useState('translate');
   const [addPieceDropdownOpen, setAddPieceDropdownOpen] = useState(false);
-  const [cameraDropdownOpen, setCameraDropdownOpen] = useState(false);
  
   const [selectedObject, setSelectedObject] = useState(null);
   const selectedObjectRef = useRef(null);
@@ -38,14 +37,12 @@ export default function ThreeCanvas() {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
-  const [isRightClicking, setIsRightClicking] = useState(false);
   const [showTransformControls, setShowTransformControls] = useState(true);
   const [snapEnabled, setSnapEnabled] = useState(true);
 
   const [position, setPosition] = useState({ x: 0, y: 0.5, z: 0 });
   const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
   const [scale, setScale] = useState({ x: 1, y: 1, z: 1 });
-  const [cameraPos, setCameraPos] = useState({x: 1, y: 1, z: 1})
 
   const positionRef = useRef(position);
   const rotationRef = useRef(rotation);
@@ -616,12 +613,6 @@ export default function ThreeCanvas() {
     };
     animate();
 
-    renderer.domElement.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      console.log('Right click detected');
-      // Add your custom right-click action here
-      alert('Right-click triggered!');
-    });
 
     return () => {
       mountRef.current.removeChild(renderer.domElement);
