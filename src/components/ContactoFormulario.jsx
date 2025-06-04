@@ -17,8 +17,6 @@ export default function ContactoFormulario() {
     ).then(() => {
       alert('Mensaje enviado con éxito');
       form.current.reset();
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
     }, (error) => {
       alert('Hubo un error al enviar el mensaje, intenta de nuevo');
       console.log(error);
