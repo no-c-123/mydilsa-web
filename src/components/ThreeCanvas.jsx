@@ -221,19 +221,14 @@ export default function ThreeCanvas() {
   }
 
   const handleExport = () => {
-    const scene = sceneRef.current;
-  
-    if (!scene) return;
-  
     const exporter = new GLTFExporter();
     exporter.parse(
-      scene,
+      sceneRef.current,
       (gltf) => {
-        const blob = new Blob([gltf], { type: 'model/gltf-binary' });
+        const blob = new Blob([JSON.stringify(gltf)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-  
-        localStorage.setItem('exportPreview', url); // Store for use in /estimate
-        window.location.href = '/estimate'; // Redirect
+        localStorage.setItem('exportPreview', url); // ✅ Save it for EstimateViewer
+        window.location.href = '/estimate'; // or navigate however you like
       },
       { binary: true }
     );
@@ -278,35 +273,6 @@ export default function ThreeCanvas() {
     setMultiSelected([]);
   }
 
-  function createTemplate(type) {
-    let geometry;
-    let material = new THREE.MeshStandardMaterial({ color: '#888' });
-  
-    switch (type.toLowerCase()) {
-      case 'ptr cuadrado':
-        geometry = new THREE.BoxGeometry(1, 1, 0.1); // thin square tube
-        break;
-      case 'ptr redondo':
-        geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32); // circle tube
-        break;
-      case 'tubo':
-        geometry = new THREE.CylinderGeometry(0.3, 0.3, 1.2, 32);
-        break;
-      case 'solera':
-        geometry = new THREE.BoxGeometry(2, 0.2, 0.1); // long flat bar
-        break;
-      case 'placa':
-        geometry = new THREE.BoxGeometry(1.5, 0.05, 1); // flat plate
-        break;
-      default:
-        geometry = new THREE.BoxGeometry(1, 1, 1);
-    }
-  
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.name = type;
-    return mesh;
-  }
-
   function highlightObjects(objects, highlight = true) {
     objects.forEach((obj) => {
       if (obj.isMesh) {
@@ -335,8 +301,7 @@ export default function ThreeCanvas() {
     if (typeof window !== 'undefined') {
       localStorage.setItem('showTransformControls', JSON.stringify(showTransformControls));
     }
-  }, [showTransformControls]);
-  
+  }, [showTransformControls]); 
 
   useEffect(() => {
     const scene = new THREE.Scene();
@@ -796,6 +761,7 @@ export default function ThreeCanvas() {
         </div>
 
         <button
+         id='resetTransformBtn'
           className="mt-2 bg-gray-700 text-white px-3 py-1 rounded w-full"
           onClick={resetTransform}
         >
@@ -803,6 +769,7 @@ export default function ThreeCanvas() {
         </button>
 
         <button
+          id='clearSelectionBtn'
           onClick={() => {
             clearSelection();
           }}
@@ -812,6 +779,7 @@ export default function ThreeCanvas() {
         </button>
 
         <button
+          id='snapToggleBtn'
           onClick={() => setSnapEnabled((prev) => !prev)}
           className='mt-2 bg-gray-700 text-white px-3 py-1 rounded w-full'
         >
@@ -819,6 +787,7 @@ export default function ThreeCanvas() {
         </button>
 
         <button
+          id='selectedCenterBtn'
           className="mt-2 bg-gray-700 text-white px-3 py-1 rounded w-full"
           onClick={centerCameraOnSelected}
         >
@@ -826,6 +795,7 @@ export default function ThreeCanvas() {
         </button>
 
           <button
+            id="toggleTransformControlsBtn"
             onClick={() => {
               setShowTransformControls((prev) => {
                 const newVal = !prev;
@@ -859,6 +829,7 @@ export default function ThreeCanvas() {
                 
                 {/* 🪑 Add Table */}
                 <button
+                  id='addTableBtn'
                   className="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1 rounded mb-2 w-full text-left"
                   onClick={() => {
                     clearSelection();
@@ -879,6 +850,7 @@ export default function ThreeCanvas() {
 
                 {/* 🚪 Add Porton */}
                 <button
+                  id='addPortonBtn'
                   className="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1 rounded mb-2 w-full text-left"
                   onClick={() => {
                     clearSelection();
@@ -899,6 +871,7 @@ export default function ThreeCanvas() {
 
                 {/* 🛠️ Add Barandal */}
                 <button
+                  id='addBarandalBtn'
                   className="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1 rounded mb-2 w-full text-left"
                   onClick={() => {
                     clearSelection();
@@ -920,6 +893,7 @@ export default function ThreeCanvas() {
             )}
           </div>
         <button
+          id="deleteObjectBtn"
           onClick={() => {
             if (confirm("¿Estás seguro de eliminar este objeto?")) {
               deleteSelectedObject();
