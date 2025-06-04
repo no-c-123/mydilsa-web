@@ -6,6 +6,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { TextureLoader } from 'three';
 import '../styles/ThreeCanvasStyles.css';
+import TourGuide from './TourGuide.jsx';
 
 
 
@@ -842,6 +843,7 @@ export default function ThreeCanvas() {
           </button>
           <div className="dropdown mt-4">
             <div
+              id="addPieceBtn"
               className="select-selected cursor-pointer"
               onClick={() => setAddPieceDropdownOpen((prev) => !prev)}
             >
@@ -930,6 +932,7 @@ export default function ThreeCanvas() {
 
         <div className="w-full flex justify-center">
           <button
+            id="exportBtn"
             onClick={handleExport}
             className="btn-4 mt-4 cursor-pointer group/download flex gap-2 px-8 py-4 bg-blue-600 text-[#f1f1f1] rounded-3xl hover:bg-opacity-80 font-semibold shadow-xl active:shadow-inner transition-all duration-300 relative"
           >
@@ -968,6 +971,7 @@ export default function ThreeCanvas() {
           <li>Flechas: mover objeto</li>
         </ul>
       </div>
+      <TourGuide />
     </div>
 
     
