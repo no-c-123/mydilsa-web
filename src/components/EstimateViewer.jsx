@@ -9,17 +9,21 @@ export default function EstimateViewer(){
         const scene = new THREE.Scene();
         scene.background = new THREE.Color('#f0f0f0');
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const width = mountRef.current.clientWidth;
+        const height = mountRef.current.clientHeight;
+
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
         camera.position.set(1.5, 1.5, 1.5);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(400, 400);
+        renderer.setSize(width, height);
         mountRef.current.appendChild(renderer.domElement);
 
         const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(1, 1, 1);
         scene.add(light);
 
+        const loader = new GLTFLoader();
         const url = localStorage.getItem('exportPreview');
         loader.load(url, (gltf) => {
             const model = gltf.scene;
@@ -39,6 +43,6 @@ export default function EstimateViewer(){
     }, [])
 
     return (
-        <div ref={mountRef} className="mt-4 rounded-lg shadow-lg"/>
+        <div ref={mountRef} className="mt-4 w-[400px] h-[400px] rounded-lg shadow-lg"/>
     )
 }
