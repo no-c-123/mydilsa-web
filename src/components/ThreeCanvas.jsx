@@ -590,6 +590,35 @@ export default function ThreeCanvas() {
       const delta = clock.getDelta();
       const speed = velocity * delta * 60;
 
+      if (selectedObjectRef.current && !isDraggingRef.current) {
+        const obj = selectedObjectRef.current;
+        let moved = false;
+        if (keysPressed.current['ArrowUp']) {
+          obj.position.z -= speed;
+          moved = true;
+        }
+        if (keysPressed.current['ArrowDown']) {
+          obj.position.z += speed;
+          moved = true;
+        }
+        if (keysPressed.current['ArrowLeft']) {
+          obj.position.x -= speed;
+          moved = true;
+        }
+        if (keysPressed.current['ArrowRight']) {
+          obj.position.x += speed;
+          moved = true;
+        }
+
+        if (moved) {
+          setPosition({
+            x: obj.position.x,
+            y: obj.position.y,
+            z: obj.position.z,
+          });
+        }
+      }
+
       renderer.render(scene, cameraRef.current)
     };
     animate();
@@ -927,7 +956,18 @@ export default function ThreeCanvas() {
       <div
         ref={selectionBox}
         className="absolute border border-blue-400 bg-blue-400 bg-opacity-20 hidden z-50 pointer-events-none"
-      />    
+      />
+
+      <div className="absolute top-4 right-4 z-10 p-3 bg-white bg-opacity-90 rounded shadow text-black text-sm">
+        <p className="font-semibold mb-1">Controles</p>
+        <ul className="list-disc list-inside space-y-1">
+          <li>Click izquierdo: seleccionar</li>
+          <li>Ctrl + Click: selección múltiple</li>
+          <li>Shift + arrastrar: cuadro de selección</li>
+          <li>Click derecho: mover cámara</li>
+          <li>Flechas: mover objeto</li>
+        </ul>
+      </div>
     </div>
 
     
