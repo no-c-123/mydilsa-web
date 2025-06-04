@@ -1,4 +1,4 @@
-import { use, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { TransformControls } from 'three-stdlib';
@@ -21,7 +21,6 @@ export default function ThreeCanvas() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [transformMode, setTransformMode] = useState('translate');
   const [addPieceDropdownOpen, setAddPieceDropdownOpen] = useState(false);
-  const [cameraDropdownOpen, setCameraDropdownOpen] = useState(false);
  
   const [selectedObject, setSelectedObject] = useState(null);
   const selectedObjectRef = useRef(null);
@@ -38,14 +37,12 @@ export default function ThreeCanvas() {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
-  const [isRightClicking, setIsRightClicking] = useState(false);
   const [showTransformControls, setShowTransformControls] = useState(true);
   const [snapEnabled, setSnapEnabled] = useState(true);
 
   const [position, setPosition] = useState({ x: 0, y: 0.5, z: 0 });
   const [rotation, setRotation] = useState({ x: 0, y: 0, z: 0 });
   const [scale, setScale] = useState({ x: 1, y: 1, z: 1 });
-  const [cameraPos, setCameraPos] = useState({x: 1, y: 1, z: 1})
 
   const positionRef = useRef(position);
   const rotationRef = useRef(rotation);
@@ -191,11 +188,21 @@ export default function ThreeCanvas() {
 
   function deleteSelectedObject() {
     if (!selectedObject || !sceneRef.current) return;
-  
+
     sceneRef.current.remove(selectedObject);
     transformControlsRef.current.detach();
     setSelectedObject(null);
     selectedObjectRef.current = null; // ← this is the fix
+  }
+
+  function ungroupTempGroup() {
+    const current = selectedObjectRef.current;
+    if (current && current.type === 'Group' && current.userData?.tempGroup) {
+      while (current.children.length > 0) {
+        sceneRef.current.attach(current.children[0]);
+      }
+      sceneRef.current.remove(current);
+    }
   }
 
   function centerPivot(group) {
@@ -384,113 +391,84 @@ export default function ThreeCanvas() {
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    
+
       raycaster.setFromCamera(mouse, cameraRef.current);
-    
+
+      if (e.shiftKey) {
+        selectionStart.current = { x: e.clientX, y: e.clientY };
+        selectionBox.current.style.left = `${e.clientX}px`;
+        selectionBox.current.style.top = `${e.clientY}px`;
+        selectionBox.current.style.width = '0px';
+        selectionBox.current.style.height = '0px';
+        selectionBox.current.classList.remove('hidden');
+        controls.enabled = false;
+        return;
+      }
+
       const meshes = sceneRef.current.children.flatMap(obj =>
         obj.type === 'Group' ? obj.children : obj
       ).filter(obj => obj.isMesh && !obj.userData.unselectable);
-    
-      const intersects = raycaster.intersectObjects(meshes, true);
-    
-      if (intersects.length > 0) {
-        let selected = intersects[0].object;
-    
-        // Climb to top parent that is a direct child of scene
-        while (selected.parent && selected.parent !== sceneRef.current) {
-          selected = selected.parent;
-        }
-    
-        if (!selected || selected.userData.unselectable) return;
-    
-        if (e.ctrlKey) {
-          // Toggle selection
-          const alreadySelected = multiSelected.includes(selected);
-          const updatedSelection = alreadySelected
-            ? multiSelected.filter(obj => obj !== selected)
-            : [...multiSelected, selected];
-        
-          highlightObjects(multiSelected, false);
-          highlightObjects(updatedSelection, true);
-          setMultiSelected(updatedSelection);
-          transformControlsRef.current.detach();
-          setSelectedObject(null);
-          selectedObjectRef.current = null;
 
-          if (updatedSelection.length === 1) {
-            const single = updatedSelection[0];
-            transformControlsRef.current.attach(single);
-            setSelectedObject(single);
-            selectedObjectRef.current = single;
-          } else if (updatedSelection.length > 1) {
-            // Regroup like before...
-            const tempGroup = new THREE.Group();
-          
-            updatedSelection.forEach(obj => {
-              const worldPos = new THREE.Vector3();
-              obj.getWorldPosition(worldPos);
-          
-              const worldQuat = new THREE.Quaternion();
-              obj.getWorldQuaternion(worldQuat);
-          
-              sceneRef.current.attach(obj);
-              tempGroup.add(obj);
-          
-              obj.position.copy(worldPos);
-              obj.quaternion.copy(worldQuat);
-            });
-          
-            const box = new THREE.Box3().setFromObject(tempGroup);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-            tempGroup.position.copy(center);
-            tempGroup.children.forEach(child => {
-              child.position.sub(center);
-            });
-          
-            sceneRef.current.add(tempGroup);
-            transformControlsRef.current.attach(tempGroup);
-            setSelectedObject(tempGroup);
-            selectedObjectRef.current = tempGroup;
-          }
-        
-          // Regroup and attach
-          const tempGroup = new THREE.Group();
-          updatedSelection.forEach(obj => {
-            // Save world position
-            const worldPos = new THREE.Vector3();
-            obj.getWorldPosition(worldPos);
-        
-            // Save world rotation
-            const worldQuat = new THREE.Quaternion();
-            obj.getWorldQuaternion(worldQuat);
-        
-            sceneRef.current.attach(obj); // remove from parent
-            tempGroup.add(obj);
-        
-            // Apply saved world transforms
-            obj.position.copy(worldPos);
-            obj.quaternion.copy(worldQuat);
+      const intersects = raycaster.intersectObjects(meshes, true);
+
+      if (intersects.length === 0) {
+        clearSelection();
+        return;
+      }
+
+      let selected = intersects[0].object;
+      while (selected.parent && selected.parent !== sceneRef.current) {
+        selected = selected.parent;
+      }
+      if (!selected || selected.userData.unselectable) return;
+
+      if (e.ctrlKey) {
+        const alreadySelected = multiSelected.includes(selected);
+        const updated = alreadySelected
+          ? multiSelected.filter(obj => obj !== selected)
+          : [...multiSelected, selected];
+
+        ungroupTempGroup();
+        highlightObjects(multiSelected, false);
+        highlightObjects(updated, true);
+        setMultiSelected(updated);
+
+        if (updated.length === 1) {
+          transformControlsRef.current.attach(updated[0]);
+          setSelectedObject(updated[0]);
+          selectedObjectRef.current = updated[0];
+        } else {
+          const group = new THREE.Group();
+          group.userData.tempGroup = true;
+          updated.forEach(obj => {
+            const pos = new THREE.Vector3();
+            obj.getWorldPosition(pos);
+            const quat = new THREE.Quaternion();
+            obj.getWorldQuaternion(quat);
+            sceneRef.current.attach(obj);
+            group.add(obj);
+            obj.position.copy(pos);
+            obj.quaternion.copy(quat);
           });
-        
-          // Position group at center of bounding box
-          const box = new THREE.Box3().setFromObject(tempGroup);
+          const box = new THREE.Box3().setFromObject(group);
           const center = new THREE.Vector3();
           box.getCenter(center);
-          tempGroup.position.copy(center);
-        
-          // Offset children so group origin matches center
-          tempGroup.children.forEach(child => {
-            child.position.sub(center);
-          });
-        
-          sceneRef.current.add(tempGroup);
-        
-          transformControlsRef.current.detach();
-          transformControlsRef.current.attach(tempGroup);
-          setSelectedObject(tempGroup);
-          selectedObjectRef.current = tempGroup;
+          group.position.copy(center);
+          group.children.forEach(child => child.position.sub(center));
+          sceneRef.current.add(group);
+          transformControlsRef.current.attach(group);
+          setSelectedObject(group);
+          selectedObjectRef.current = group;
         }
+      } else {
+        ungroupTempGroup();
+        highlightObjects(multiSelected, false);
+        setMultiSelected([]);
+        if (selectedObjectRef.current) highlightObjects([selectedObjectRef.current], false);
+        highlightObjects([selected], true);
+        transformControlsRef.current.attach(selected);
+        setSelectedObject(selected);
+        selectedObjectRef.current = selected;
       }
     });
 
@@ -612,16 +590,39 @@ export default function ThreeCanvas() {
       const delta = clock.getDelta();
       const speed = velocity * delta * 60;
 
+      if (selectedObjectRef.current && !isDraggingRef.current) {
+        const obj = selectedObjectRef.current;
+        let moved = false;
+        if (keysPressed.current['ArrowUp']) {
+          obj.position.z -= speed;
+          moved = true;
+        }
+        if (keysPressed.current['ArrowDown']) {
+          obj.position.z += speed;
+          moved = true;
+        }
+        if (keysPressed.current['ArrowLeft']) {
+          obj.position.x -= speed;
+          moved = true;
+        }
+        if (keysPressed.current['ArrowRight']) {
+          obj.position.x += speed;
+          moved = true;
+        }
+
+        if (moved) {
+          setPosition({
+            x: obj.position.x,
+            y: obj.position.y,
+            z: obj.position.z,
+          });
+        }
+      }
+
       renderer.render(scene, cameraRef.current)
     };
     animate();
 
-    renderer.domElement.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      console.log('Right click detected');
-      // Add your custom right-click action here
-      alert('Right-click triggered!');
-    });
 
     return () => {
       mountRef.current.removeChild(renderer.domElement);
@@ -955,7 +956,18 @@ export default function ThreeCanvas() {
       <div
         ref={selectionBox}
         className="absolute border border-blue-400 bg-blue-400 bg-opacity-20 hidden z-50 pointer-events-none"
-      />    
+      />
+
+      <div className="absolute top-4 right-4 z-10 p-3 bg-white bg-opacity-90 rounded shadow text-black text-sm">
+        <p className="font-semibold mb-1">Controles</p>
+        <ul className="list-disc list-inside space-y-1">
+          <li>Click izquierdo: seleccionar</li>
+          <li>Ctrl + Click: selección múltiple</li>
+          <li>Shift + arrastrar: cuadro de selección</li>
+          <li>Click derecho: mover cámara</li>
+          <li>Flechas: mover objeto</li>
+        </ul>
+      </div>
     </div>
 
     

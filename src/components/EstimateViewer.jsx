@@ -20,6 +20,7 @@ export default function EstimateViewer(){
         light.position.set(1, 1, 1);
         scene.add(light);
 
+        const loader = new GLTFLoader();
         const url = localStorage.getItem('exportPreview');
         loader.load(url, (gltf) => {
             const model = gltf.scene;
