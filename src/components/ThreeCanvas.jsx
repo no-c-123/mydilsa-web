@@ -188,11 +188,21 @@ export default function ThreeCanvas() {
 
   function deleteSelectedObject() {
     if (!selectedObject || !sceneRef.current) return;
-  
+
     sceneRef.current.remove(selectedObject);
     transformControlsRef.current.detach();
     setSelectedObject(null);
     selectedObjectRef.current = null; // ← this is the fix
+  }
+
+  function ungroupTempGroup() {
+    const current = selectedObjectRef.current;
+    if (current && current.type === 'Group' && current.userData?.tempGroup) {
+      while (current.children.length > 0) {
+        sceneRef.current.attach(current.children[0]);
+      }
+      sceneRef.current.remove(current);
+    }
   }
 
   function centerPivot(group) {
@@ -381,113 +391,84 @@ export default function ThreeCanvas() {
       const rect = renderer.domElement.getBoundingClientRect();
       mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    
+
       raycaster.setFromCamera(mouse, cameraRef.current);
-    
+
+      if (e.shiftKey) {
+        selectionStart.current = { x: e.clientX, y: e.clientY };
+        selectionBox.current.style.left = `${e.clientX}px`;
+        selectionBox.current.style.top = `${e.clientY}px`;
+        selectionBox.current.style.width = '0px';
+        selectionBox.current.style.height = '0px';
+        selectionBox.current.classList.remove('hidden');
+        controls.enabled = false;
+        return;
+      }
+
       const meshes = sceneRef.current.children.flatMap(obj =>
         obj.type === 'Group' ? obj.children : obj
       ).filter(obj => obj.isMesh && !obj.userData.unselectable);
-    
-      const intersects = raycaster.intersectObjects(meshes, true);
-    
-      if (intersects.length > 0) {
-        let selected = intersects[0].object;
-    
-        // Climb to top parent that is a direct child of scene
-        while (selected.parent && selected.parent !== sceneRef.current) {
-          selected = selected.parent;
-        }
-    
-        if (!selected || selected.userData.unselectable) return;
-    
-        if (e.ctrlKey) {
-          // Toggle selection
-          const alreadySelected = multiSelected.includes(selected);
-          const updatedSelection = alreadySelected
-            ? multiSelected.filter(obj => obj !== selected)
-            : [...multiSelected, selected];
-        
-          highlightObjects(multiSelected, false);
-          highlightObjects(updatedSelection, true);
-          setMultiSelected(updatedSelection);
-          transformControlsRef.current.detach();
-          setSelectedObject(null);
-          selectedObjectRef.current = null;
 
-          if (updatedSelection.length === 1) {
-            const single = updatedSelection[0];
-            transformControlsRef.current.attach(single);
-            setSelectedObject(single);
-            selectedObjectRef.current = single;
-          } else if (updatedSelection.length > 1) {
-            // Regroup like before...
-            const tempGroup = new THREE.Group();
-          
-            updatedSelection.forEach(obj => {
-              const worldPos = new THREE.Vector3();
-              obj.getWorldPosition(worldPos);
-          
-              const worldQuat = new THREE.Quaternion();
-              obj.getWorldQuaternion(worldQuat);
-          
-              sceneRef.current.attach(obj);
-              tempGroup.add(obj);
-          
-              obj.position.copy(worldPos);
-              obj.quaternion.copy(worldQuat);
-            });
-          
-            const box = new THREE.Box3().setFromObject(tempGroup);
-            const center = new THREE.Vector3();
-            box.getCenter(center);
-            tempGroup.position.copy(center);
-            tempGroup.children.forEach(child => {
-              child.position.sub(center);
-            });
-          
-            sceneRef.current.add(tempGroup);
-            transformControlsRef.current.attach(tempGroup);
-            setSelectedObject(tempGroup);
-            selectedObjectRef.current = tempGroup;
-          }
-        
-          // Regroup and attach
-          const tempGroup = new THREE.Group();
-          updatedSelection.forEach(obj => {
-            // Save world position
-            const worldPos = new THREE.Vector3();
-            obj.getWorldPosition(worldPos);
-        
-            // Save world rotation
-            const worldQuat = new THREE.Quaternion();
-            obj.getWorldQuaternion(worldQuat);
-        
-            sceneRef.current.attach(obj); // remove from parent
-            tempGroup.add(obj);
-        
-            // Apply saved world transforms
-            obj.position.copy(worldPos);
-            obj.quaternion.copy(worldQuat);
+      const intersects = raycaster.intersectObjects(meshes, true);
+
+      if (intersects.length === 0) {
+        clearSelection();
+        return;
+      }
+
+      let selected = intersects[0].object;
+      while (selected.parent && selected.parent !== sceneRef.current) {
+        selected = selected.parent;
+      }
+      if (!selected || selected.userData.unselectable) return;
+
+      if (e.ctrlKey) {
+        const alreadySelected = multiSelected.includes(selected);
+        const updated = alreadySelected
+          ? multiSelected.filter(obj => obj !== selected)
+          : [...multiSelected, selected];
+
+        ungroupTempGroup();
+        highlightObjects(multiSelected, false);
+        highlightObjects(updated, true);
+        setMultiSelected(updated);
+
+        if (updated.length === 1) {
+          transformControlsRef.current.attach(updated[0]);
+          setSelectedObject(updated[0]);
+          selectedObjectRef.current = updated[0];
+        } else {
+          const group = new THREE.Group();
+          group.userData.tempGroup = true;
+          updated.forEach(obj => {
+            const pos = new THREE.Vector3();
+            obj.getWorldPosition(pos);
+            const quat = new THREE.Quaternion();
+            obj.getWorldQuaternion(quat);
+            sceneRef.current.attach(obj);
+            group.add(obj);
+            obj.position.copy(pos);
+            obj.quaternion.copy(quat);
           });
-        
-          // Position group at center of bounding box
-          const box = new THREE.Box3().setFromObject(tempGroup);
+          const box = new THREE.Box3().setFromObject(group);
           const center = new THREE.Vector3();
           box.getCenter(center);
-          tempGroup.position.copy(center);
-        
-          // Offset children so group origin matches center
-          tempGroup.children.forEach(child => {
-            child.position.sub(center);
-          });
-        
-          sceneRef.current.add(tempGroup);
-        
-          transformControlsRef.current.detach();
-          transformControlsRef.current.attach(tempGroup);
-          setSelectedObject(tempGroup);
-          selectedObjectRef.current = tempGroup;
+          group.position.copy(center);
+          group.children.forEach(child => child.position.sub(center));
+          sceneRef.current.add(group);
+          transformControlsRef.current.attach(group);
+          setSelectedObject(group);
+          selectedObjectRef.current = group;
         }
+      } else {
+        ungroupTempGroup();
+        highlightObjects(multiSelected, false);
+        setMultiSelected([]);
+        if (selectedObjectRef.current) highlightObjects([selectedObjectRef.current], false);
+        highlightObjects([selected], true);
+        transformControlsRef.current.attach(selected);
+        setSelectedObject(selected);
+        selectedObjectRef.current = selected;
       }
     });
 
