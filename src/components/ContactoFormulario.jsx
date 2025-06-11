@@ -1,10 +1,27 @@
 import '../styles/ContactoFormulario.css';
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import emailjs from '@emailjs/browser';
+import { supabase } from '../lib/supabaseClient';
 
 export default function ContactoFormulario() {
+  
   const form = useRef();
   const captchaRef = useRef();
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
+  // Prefill user data from Supabase Auth
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (user) {
+        setUserEmail(user.email || '');
+        setUserName(user.user_metadata?.full_name || user.user_metadata?.name || '');
+      }
+    };
+    fetchUser();
+  }, []);
 
   const sendEmail = (e) => {
     e.preventDefault();
@@ -32,7 +49,14 @@ export default function ContactoFormulario() {
         <form ref={form} onSubmit={sendEmail} className="space-y-10">
           {/* Nombre */}
           <div className="wave-group w-full">
-            <input required type="text" name="from_name" className="input w-full" />
+            <input
+              required
+              type="text"
+              name="from_name"
+              className="input w-full"
+              value={userName}
+              onChange={e => setUserName(e.target.value)}
+            />
             <span className="bar"></span>
             <label className="label">
               {'Nombre'.split('').map((char, i) => (
@@ -43,7 +67,14 @@ export default function ContactoFormulario() {
 
           {/* Correo */}
           <div className="wave-group w-full">
-            <input required type="email" name="from_email" className="input w-full" />
+            <input
+              required
+              type="email"
+              name="from_email"
+              className="input w-full"
+              value={userEmail}
+              onChange={e => setUserEmail(e.target.value)}
+            />
             <span className="bar"></span>
             <label className="label">
               {'Correo'.split('').map((char, i) => (

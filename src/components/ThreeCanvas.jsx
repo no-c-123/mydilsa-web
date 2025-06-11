@@ -7,8 +7,48 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { TextureLoader } from 'three';
 import '../styles/ThreeCanvasStyles.css';
 import TourGuide from './TourGuide.jsx';
+import { supabase } from '../lib/supabaseClient';
+import { motion } from 'framer-motion';
 
+export function ModelPreview3D({ modelUrl, width = 120, height = 120 }) {
+  const mountRef = useRef();
 
+  useEffect(() => {
+    if (!modelUrl) return;
+    let renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    mountRef.current.appendChild(renderer.domElement);
+
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(0, 0, 2);
+
+    let light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(1, 1, 2);
+    scene.add(light);
+
+    let loader = new GLTFLoader();
+    let model;
+    loader.load(modelUrl, (gltf) => {
+      model = gltf.scene;
+      scene.add(model);
+      animate();
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      if (model) model.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+
+    return () => {
+      renderer.dispose();
+      if (mountRef.current) mountRef.current.innerHTML = '';
+    };
+  }, [modelUrl, width, height]);
+
+  return <div ref={mountRef} style={{ width, height }} />;
+}
 
 export default function ThreeCanvas() {
 
@@ -222,15 +262,77 @@ export default function ThreeCanvas() {
 
   const handleExport = () => {
     const exporter = new GLTFExporter();
+
+    // Create a group for export and add only user-created objects
+    const exportGroup = new THREE.Group();
+    sceneRef.current.children.forEach(obj => {
+      if (
+        obj.type === 'GridHelper' ||
+        obj.type === 'AxesHelper' ||
+        obj.type === 'TransformControls' ||
+        obj.name === 'floor' ||
+        obj.userData.unselectable
+      ) {
+        return;
+      }
+      exportGroup.add(obj.clone(true));
+    });
+
     exporter.parse(
-      sceneRef.current,
-      (gltf) => {
-        const blob = new Blob([JSON.stringify(gltf)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        localStorage.setItem('exportPreview', url); // ✅ Save it for EstimateViewer
-        window.location.href = '/estimate'; // or navigate however you like
+      exportGroup,
+      async (result) => {
+        // result is a JSON object with references to a .bin file
+        const gltfJson = JSON.stringify(result, null, 2);
+        const gltfFileName = `model-${Date.now()}.gltf`;
+        const binFileName = gltfJson.match(/"uri":\s*"([^"]+\.bin)"/);
+        let binBlob = null;
+        let binName = null;
+
+        // Find the .bin file in the result (if any)
+        if (binFileName && binFileName[1]) {
+          binName = binFileName[1];
+          // The GLTFExporter stores the .bin data in result.buffers[0].uri as a base64 string
+          const binBase64 = result.buffers && result.buffers[0] && result.buffers[0].uri;
+          if (binBase64 && binBase64.startsWith('data:')) {
+            const base64Data = binBase64.split(',')[1];
+            const binArray = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+            binBlob = new Blob([binArray], { type: 'application/octet-stream' });
+          }
+        }
+
+        // Upload .gltf
+        const { error: gltfError } = await supabase.storage
+          .from('models')
+          .upload(gltfFileName, new Blob([gltfJson], { type: 'application/json' }), { upsert: true });
+        if (gltfError) {
+          alert('Error uploading .gltf: ' + gltfError.message);
+          return;
+        }
+
+        // Upload .bin (if present)
+        if (binBlob && binName) {
+          const { error: binError } = await supabase.storage
+            .from('models')
+            .upload(binName, binBlob, { upsert: true });
+          if (binError) {
+            alert('Error uploading .bin: ' + binError.message);
+            return;
+          }
+        }
+
+        // Generate signed URL for .gltf
+        const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+          .from('models')
+          .createSignedUrl(gltfFileName, 60 * 60);
+        if (signedUrlError) {
+          alert('Error creating signed URL: ' + signedUrlError.message);
+          return;
+        }
+        const signedUrl = signedUrlData.signedUrl;
+        localStorage.setItem('exportPreview', signedUrl);
+        window.location.href = '/estimate';
       },
-      { binary: true }
+      { binary: false, embedImages: true }
     );
   };
 
