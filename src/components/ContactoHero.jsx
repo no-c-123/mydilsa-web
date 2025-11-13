@@ -9,8 +9,8 @@ export default function ContactoHero() {
           ¿Tienes dudas, quieres cotizar o simplemente saber más sobre nuestros servicios? Estamos para ayudarte.
         </p>
         <a
-          href="/cotizar"
-          className="inline-block bg-mydilsa-accent text-white px-8 py-4 rounded-md font-semibold shadow-md hover:bg-mydilsa-dark transition"
+          href="#contacto"
+          className="inline-block bg-mydilsa-accent text-white px-8 py-4 rounded-md font-semibold shadow-md hover:bg-mydilsa-dark transition scroll-smooth duration-300"
         >
           Ir a Cotizar
         </a>

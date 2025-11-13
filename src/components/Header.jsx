@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import AuthButton from './AuthButton';
 
 export default function Header({ currentPath }) {
   const [open, setOpen] = useState(false);
@@ -39,8 +38,6 @@ export default function Header({ currentPath }) {
           <a href="/servicios" className={linkClass('/servicios')}>Servicios</a>
           <a href="/productos" className={linkClass('/productos')}>Productos</a>
           <a href="/contacto" className={linkClass('/contacto')}>Contacto</a>
-          <AuthButton onClick={() => setOpen(false)}/>
-          
         </nav>
 
         {/* Mobile Toggle */}
@@ -58,7 +55,6 @@ export default function Header({ currentPath }) {
           <a href="/servicios" onClick={() => setOpen(false)} className={linkClass('/servicios')}>Servicios</a>
           <a href="/productos" onClick={() => setOpen(false)} className={linkClass('/productos')}>Productos</a>
           <a href="/contacto" onClick={() => setOpen(false)} className={linkClass('/contacto')}>Contacto</a>
-          <AuthButton onClick={() => setOpen(false)}/>
         </div>
       )}
     </header>
