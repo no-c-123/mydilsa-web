@@ -34,7 +34,7 @@ export default function Header({ currentPath }) {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <a href="/" className={linkClass('/')}>Inicio</a>
+          <a href="/" className={linkClass('/index')}>Inicio</a>
           <a href="/servicios" className={linkClass('/servicios')}>Servicios</a>
           <a href="/productos" className={linkClass('/productos')}>Productos</a>
           <a href="/contacto" className={linkClass('/contacto')}>Contacto</a>
@@ -51,7 +51,7 @@ export default function Header({ currentPath }) {
       {/* Mobile Nav */}
       {open && (
         <div className="md:hidden px-6 pb-4 flex flex-col gap-4 text-sm font-medium bg-white border-t">
-          <a href="/" onClick={() => setOpen(false)} className={linkClass('/')}>Inicio</a>
+          <a href="/" onClick={() => setOpen(false)} className={linkClass('/index')}>Inicio</a>
           <a href="/servicios" onClick={() => setOpen(false)} className={linkClass('/servicios')}>Servicios</a>
           <a href="/productos" onClick={() => setOpen(false)} className={linkClass('/productos')}>Productos</a>
           <a href="/contacto" onClick={() => setOpen(false)} className={linkClass('/contacto')}>Contacto</a>
