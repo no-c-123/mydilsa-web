@@ -13,7 +13,14 @@ export default function Header({ currentPath }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isActive = (href) => currentPath.startsWith(href);
+  const isActive = (href) => {
+    // Handle root path specially - it should match exactly or be the only path
+    if (href === '/') {
+      return currentPath === '/' || currentPath === '/index';
+    }
+    return currentPath.startsWith(href);
+  };
+  
   const linkClass = (href) =>
     `relative transition hover:text-mydilsa-accent ${
       isActive(href) ? 'text-mydilsa-accent font-semibold' : ''
@@ -26,15 +33,15 @@ export default function Header({ currentPath }) {
       }`}
     >
       <div className="max-w-8xl mx-auto px-6 flex items-center justify-between transition-all">
-        {/* Left side: Logo and title */}
-        <div className="flex items-center gap-4">
+        {/* Left side: Logo and title - clickable to home */}
+        <a href="/" className="flex items-center gap-4 hover:opacity-80 transition-opacity cursor-pointer">
           <img src="/Logo.webp" alt="Mydilsa Logo" className="w-20 h-auto transition-all duration-300" />
           <span className="text-xl font-semibold tracking-wide">Mydilsa</span>
-        </div>
+        </a>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <a href="/" className={linkClass('/index')}>Inicio</a>
+          <a href="/" className={linkClass('/')}>Inicio</a>
           <a href="/servicios" className={linkClass('/servicios')}>Servicios</a>
           <a href="/productos" className={linkClass('/productos')}>Productos</a>
           <a href="/contacto" className={linkClass('/contacto')}>Contacto</a>
@@ -51,10 +58,34 @@ export default function Header({ currentPath }) {
       {/* Mobile Nav */}
       {open && (
         <div className="md:hidden px-6 pb-4 flex flex-col gap-4 text-sm font-medium bg-white border-t">
-          <a href="/" onClick={() => setOpen(false)} className={linkClass('/index')}>Inicio</a>
-          <a href="/servicios" onClick={() => setOpen(false)} className={linkClass('/servicios')}>Servicios</a>
-          <a href="/productos" onClick={() => setOpen(false)} className={linkClass('/productos')}>Productos</a>
-          <a href="/contacto" onClick={() => setOpen(false)} className={linkClass('/contacto')}>Contacto</a>
+          <a 
+            href="/" 
+            onClick={() => setOpen(false)} 
+            className={linkClass('/')}
+          >
+            Inicio
+          </a>
+          <a 
+            href="/servicios" 
+            onClick={() => setOpen(false)} 
+            className={linkClass('/servicios')}
+          >
+            Servicios
+          </a>
+          <a 
+            href="/productos" 
+            onClick={() => setOpen(false)} 
+            className={linkClass('/productos')}
+          >
+            Productos
+          </a>
+          <a 
+            href="/contacto" 
+            onClick={() => setOpen(false)} 
+            className={linkClass('/contacto')}
+          >
+            Contacto
+          </a>
         </div>
       )}
     </header>
