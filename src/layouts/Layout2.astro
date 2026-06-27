@@ -1,6 +1,20 @@
 ---
-
 const currentPath = Astro.url.pathname;
+const siteUrl = 'https://mydilsa.com';
+const pageTitle = 'Mydilsa';
+const pageDescription =
+  'Mydilsa ofrece diseño industrial, maquinado CNC, fabricación y soluciones de manufactura con altos estándares de calidad.';
+const canonicalUrl = new URL(currentPath, siteUrl).toString();
+const logoUrl = new URL('/Logo.webp', siteUrl).toString();
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Mydilsa',
+  url: siteUrl,
+  logo: logoUrl,
+  image: logoUrl,
+  sameAs: [siteUrl],
+};
 ---
 
 <!doctype html>
@@ -9,9 +23,23 @@ const currentPath = Astro.url.pathname;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={logoUrl} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={logoUrl} />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet" />
-    <title>Mydilsa</title>
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
 
   <body class="font-sans bg-mydilsa-light text-mydilsa-dark flex flex-col min-h-screen">
